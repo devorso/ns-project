@@ -2,24 +2,24 @@ set val(chan)       Channel/WirelessChannel
 set val(prop)       Propagation/TwoRayGround
 set val(netif)      Phy/WirelessPhy
 set val(mac)        Mac/802_11
-set val(ifq)        Queue/DropTail/PriQueue
+set val(ifq)        CMUPriQueue 
 set val(ll)         LL
 set val(ant)        Antenna/OmniAntenna
 set val(x)          1000   
 set val(y)          1000   
 set val(ifqlen)     50            
-set val(seed)       1.0
-set val(nn)         100           
+set val(seed)       1
+set val(nn)         50           
 set val(cp)         "./cbr-50" 
 set val(sc)         "./newscen" 
-set val(stop)       200        
-set val(rp)         AODV                   
+set val(stop)       100        
+set val(rp)         DSR                   
 
-# Create a simulator object
+# Create a simulator object #Queue/DropTail/PriQueue
 set ns_  [new Simulator]
 set topo [new Topography]
 
-set tracefd  [open out-100noeuds-50AODV.tr w]      
+set tracefd  [open out-50noeuds-50DSR.tr w]      
 $ns_ trace-all $tracefd
 
 $topo load_flatgrid $val(x) $val(y)
@@ -43,7 +43,7 @@ $ns_ node-config -adhocRouting $val(rp) \
 
 for {set j 0} {$j < $val(nn) } {incr j} {
         set node_($j) [$ns_ node]
-   	$node_($j) random-motion 0
+   	
 } 
 
 # 
@@ -58,14 +58,7 @@ source $val(cp)
 puts "Loading scenario file..."
 source $val(sc)
 
-# Define node initial position in nam
-for {set i 0} {$i < $val(nn)} {incr i} {
 
-        # 20 defines the node size in nam, must adjust it according to your
-        # scenario size.
-        # The function must be called after mobility model is defined
-        $ns_ initial_node_pos $node_($i) 20
-}  
 for {set i 0} {$i < $val(nn) } {incr i} {
     $ns_ at $val(stop) "$node_($i) reset";
 }
